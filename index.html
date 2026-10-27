@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>All Games Premium</title>
+
+<!-- Иконка сайта и настройки для телефона -->
+<link rel="icon" type="image/jpeg" href="Screenshot_20261027-093037.jpg">
+<meta property="og:image" content="https://allgames1.neocities.org/Screenshot_20261027-093037.jpg">
+<meta name="theme-color" content="#ffffff">
+<meta name="mobile-web-app-capable" content="yes">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:Arial,sans-serif;background:#f4f7f6;min-height:100vh;color:#333;padding:20px;display:flex;flex-direction:column;align-items:center;justify-content:center}h1{font-size:28px;margin-bottom:10px;color:#2c3e50;text-align:center}h2{font-size:22px;margin-bottom:15px;color:#2c3e50;text-align:center}.screen{display:none;width:100%;max-width:400px}.screen.active{display:block}.menu-btn{padding:18px;font-size:18px;border:2px solid #3498db;border-radius:12px;background:#fff;color:#3498db;cursor:pointer;font-weight:bold;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-bottom:12px}.menu-btn:hover{background:#e8f4fd}.menu-btn:active{transform:scale(.98)}.menu-btn.premium-btn{border-color:#f1c40f;color:#d35400;background:#fffdf0}.game-option{padding:15px;margin:10px 0;border:2px solid #3498db;border-radius:8px;background:#fff;color:#2c3e50;cursor:pointer;font-size:16px;font-weight:bold;transition:.2s;text-align:center}.game-option:hover{background:#e8f4fd}.game-option.locked{border-color:#e74c3c;color:#e74c3c}.btn{margin:10px 0;padding:15px;background:#3498db;border:none;border-radius:8px;color:#fff;font-size:16px;font-weight:bold;cursor:pointer;width:100%;display:block;text-align:center;text-decoration:none}.btn:active{background:#2980b9}.btn-back{background:#7f8c8d;font-size:14px;padding:10px}.btn-tg{background:linear-gradient(135deg,#229ED9,#4FC3F7)}.input-field{width:100%;padding:15px;margin:10px 0;border:2px solid #ccc;border-radius:8px;font-size:16px;text-align:center;font-family:inherit}.code-box{background:#2c3e50;color:#fff;padding:20px;border-radius:8px;font-size:32px;font-weight:bold;letter-spacing:8px;margin:15px 0;cursor:pointer;text-align:center}.status{font-size:18px;margin:15px 0;font-weight:bold;min-height:25px;text-align:center}.ttt-grid{display:grid;grid-template-columns:repeat(3,70px);gap:8px;justify-content:center;margin:0 auto}.ttt-cell{width:70px;height:70px;background:#f9f9f9;border:2px solid #3498db;border-radius:8px;font-size:35px;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center}.c4-grid{display:grid;grid-template-columns:repeat(7,35px);grid-template-rows:repeat(6,35px);gap:4px;background:#3498db;padding:6px;border-radius:8px;justify-content:center;margin:0 auto}.c4-cell{width:35px;height:35px;background:#fff;border-radius:50%;cursor:pointer;border:none}.c4-cell.red{background:#e74c3c}.c4-cell.yellow{background:#f1c40f}.checkers-board{display:grid;grid-template-columns:repeat(8,30px);grid-template-rows:repeat(8,30px);border:3px solid #2c3e50;margin:0 auto;width:fit-content}.checkers-cell{width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer}.checkers-cell.white{background:#f0d9b5}.checkers-cell.black{background:#b58863}.checkers-cell.selected{box-shadow:inset 0 0 0 3px #2ecc71}.checkers-cell.valid-move{box-shadow:inset 0 0 0 3px #f1c40f}.checker-piece{width:22px;height:22px;border-radius:50%;border:2px solid #333;pointer-events:none}.checker-piece.red{background:#e74c3c}.checker-piece.blue{background:#3498db}.checker-piece.king{box-shadow:inset 0 0 0 2px #fff}.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);display:none;justify-content:center;align-items:center;z-index:1000}.modal.active{display:flex}.modal-content{background:#fff;padding:25px;border-radius:12px;max-width:300px;width:90%;text-align:center}#draw-canvas{border:2px solid #3498db;border-radius:8px;background:#fff;touch-action:none;width:100%;max-width:300px;margin:0 auto;display:block;cursor:crosshair}.restart-btn{background:#e67e22;margin-top:10px;font-size:14px;padding:12px}
+</style>
+</head>
+<body>
+
+<!-- ГЛАВНЫЙ ЭКРАН -->
+<div id="screen-main" class="screen active">
+  <h1>🎮 All Games</h1>
+  <button class="menu-btn" onclick="inviteFriend()" style="border-color: #2ecc71; color: #27ae60; background: #e8f8f5;">❤️ Пригласить друга</button>
+  <button class="menu-btn" onclick="showSelect('online')">🌐 Игра с другом</button>
+  <button class="menu-btn" onclick="showSelect('bot')">🤖 Игра с ботом</button>
+  <button class="menu-btn" onclick="showScreen('screen-draw'); initDraw()">✏️ Крокодил (Бот угадывает)</button>
+  <button class="menu-btn premium-btn" onclick="openProfile()">⭐ Premium / Профиль</button>
+</div>
+
+<!-- ЭКРАН ВХОДА / РЕГИСТРАЦИИ -->
+<div id="screen-auth" class="screen">
+  <h2 id="auth-title">Вход в аккаунт</h2>
+  <input type="email" id="auth-email" class="input-field" placeholder="Твой Email">
+  <input type="password" id="auth-password" class="input-field" placeholder="Пароль">
+  <button class="btn" id="auth-submit-btn" onclick="handleAuth()">Войти</button>
+  <p style="text-align: center; font-size: 14px; margin: 15px 0; color: #7f8c8d;">
+    <span id="auth-switch-text">Нет аккаунта?</span> 
+    <a href="#" onclick="toggleAuthMode(event)" style="color: #3498db; text-decoration: none;" id="auth-switch-btn">Зарегистрироваться</a>
+  </p>
+  <button class="btn btn-back" onclick="showScreen('screen-main')" style="background: #bdc3c7; margin-top: 5px;">Продолжить без аккаунта</button>
+</div>
+
+<!-- ЭКРАН ПРОФИЛЯ -->
+<div id="screen-premium" class="screen">
+  <h2>⭐ Твой Профиль</h2>
+  <div class="status" id="premium-status">Загрузка...</div>
+  
+  <div id="profile-content" style="display:none;">
+    <p style="font-size:14px;margin-bottom:5px;">Твой никнейм:</p>
+    <input type="text" id="profile-nickname" class="input-field" placeholder="Придумай ник" maxlength="15">
+    <button class="btn" onclick="saveNickname()" style="padding: 10px; font-size: 14px; margin-bottom: 15px;">Сохранить ник</button>
+
+    <p style="font-size:14px;margin-bottom:10px;">Выбери свою аватарку:</p>
+    <div style="display:flex;gap:10px;justify-content:center;margin-bottom:15px;">
+      <button onclick="setAvatar('🐴')" style="font-size:24px;background:none;border:1px solid #ccc;padding:5px 10px;border-radius:8px;">🐴</button>
+      <button onclick="setAvatar('🐱')" style="font-size:24px;background:none;border:1px solid #ccc;padding:5px 10px;border-radius:8px;">🐱</button>
+      <button onclick="setAvatar('👾')" style="font-size:24px;background:none;border:1px solid #ccc;padding:5px 10px;border-radius:8px;">👾</button>
+      <button onclick="setAvatar('👑')" style="font-size:24px;background:none;border:1px solid #ccc;padding:5px 10px;border-radius:8px;">👑</button>
+    </div>
+
+    <input type="text" id="promoCode" class="input-field" placeholder="Ввести Premium код (DGS-XXX-XXX)">
+    <button class="btn" onclick="activatePremium()">Активировать</button>
+    <a href="https://t.me/dimonchik1223" target="_blank" class="btn btn-tg">💳 Купить Premium в Telegram</a>
+    
+    <button class="btn" onclick="logout()" style="background: #e67e22; margin-top: 20px;">🚪 Выйти из аккаунта</button>
+    <button class="btn" onclick="deleteAccount()" style="background: #e74c3c; font-size: 14px;">🗑️ Удалить аккаунт</button>
+  </div>
+
+  <button class="btn btn-back" onclick="showScreen('screen-main')" style="margin-top: 15px;">⬅️ Назад</button>
+</div>
+
+<!-- ОСТАЛЬНЫЕ ЭКРАНЫ -->
+<div id="screen-select" class="screen">
+<h1 id="select-title">Выбери игру</h1>
+<div class="game-option" onclick="startGame('ttt')">❌ Крестики-нолики</div>
+<div class="game-option" onclick="startGame('c4')">🔴 4 в ряд</div>
+<div class="game-option locked" id="checkers-option" onclick="tryCheckers()">🔵 Шашки 🔒</div>
+<button class="btn btn-back" onclick="showScreen('screen-main')">⬅️ Назад</button>
+</div>
+<div id="screen-net" class="screen">
+<h2 id="net-title">Сеть</h2>
+<div id="net-menu">
+<button class="btn" onclick="createNetGame()">Создать игру</button>
+<input type="text" id="joinCode" class="input-field" placeholder="Введи код друга">
+<button class="btn" onclick="joinNetGame()">Подключиться</button>
+</div>
+<div id="net-game" style="display:none;">
+<div class="status" id="net-status">Ожидание...</div>
+<div id="net-board"></div>
+</div>
+<button class="btn btn-back" onclick="backToMenu()">⬅️ Назад</button>
+</div>
+<div id="screen-bot" class="screen">
+<h2 id="bot-title">Бот</h2>
+<div class="status" id="bot-status">Твой ход</div>
+<div id="bot-board"></div>
+<button class="btn restart-btn" id="bot-restart" style="display:none;" onclick="initBotGame()">🔃 Начать заново</button>
+<button class="btn btn-back" onclick="backToMenu()">⬅️ Назад</button>
+</div>
+<div id="screen-checkers" class="screen">
+<h2>Шашки (Premium)</h2>
+<div class="status" id="checkers-status">Ходят Красные 🔴</div>
+<div class="checkers-board" id="checkers-board"></div>
+<button class="btn btn-back" onclick="showScreen('screen-main')">⬅️ Назад</button>
+</div>
+<div id="screen-draw" class="screen">
+<h2>✏️ Крокодил</h2>
+<div class="status" id="draw-status">Нарисуй что-нибудь!</div>
+<canvas id="draw-canvas" width="300" height="300"></canvas>
+<button class="btn" onclick="clearCanvas()">🗑️ Очистить</button>
+<button class="btn" onclick="botGuess()">🤖 Угадать (Бот)</button>
+<button class="btn btn-back" onclick="showScreen('screen-main')">⬅️ Назад</button>
+</div>
+<div class="modal" id="modal">
+<div class="modal-content">
+<h3 style="color:#e74c3c;margin-bottom:10px;">🔒 Доступ закрыт</h3>
+<p>Эта функция доступна только с Premium статусом!</p>
+<button class="btn" onclick="closeModal()">Ок</button>
+</div>
+</div>
+
+<script>
+// --- ИНИЦИАЛИЗАЦИЯ SUPABASE ЧЕРЕЗ CLOUDFLARE WORKER (БЕЗ VPN) ---
+const dbClient = window.supabase.createClient(
+  'https://aged-wood-b4a7.gonikovdim4.workers.dev', 
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0d2xyaXh3Znh4eGNlbnZqcXJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5NjY5MTUsImV4cCI6MjEwODU0MjkxNX0.4VGbos1SV7BuFLFLdZshPRIfOGqdHaQLu-7kB2IFEzM'
+);
+
+let currentUser = null;
+let userProfile = { nickname: '', avatar: '🐴', is_premium: false };
+let isPremium = false; 
+let isLoginMode = true;
+
+// --- АВТОРИЗАЦИЯ ---
+async function checkAuth() {
+  const { data: { session } } = await dbClient.auth.getSession();
+  currentUser = session ? session.user : null;
+  if (currentUser) {
+    await loadProfile();
+  }
+}
+
+function openProfile() {
+  if (currentUser) {
+    showScreen('screen-premium');
+    updateProfileUI();
+  } else {
+    showScreen('screen-auth');
+  }
+}
+
+function toggleAuthMode(e) {
+  if(e) e.preventDefault();
+  isLoginMode = !isLoginMode;
+  document.getElementById('auth-title').textContent = isLoginMode ? 'Вход в аккаунт' : 'Регистрация';
+  document.getElementById('auth-submit-btn').textContent = isLoginMode ? 'Войти' : 'Создать аккаунт';
+  document.getElementById('auth-switch-text').textContent = isLoginMode ? 'Нет аккаунта?' : 'Уже есть аккаунт?';
+  document.getElementById('auth-switch-btn').textContent = isLoginMode ? 'Зарегистрироваться' : 'Войти';
+}
+
+async function handleAuth() {
+  const email = document.getElementById('auth-email').value.trim();
+  const password = document.getElementById('auth-password').value.trim();
+  if (!email || !password) return alert('Заполни все поля!');
+
+  const btn = document.getElementById('auth-submit-btn');
+  btn.textContent = 'Загрузка...';
+
+  if (isLoginMode) {
+    const { data, error } = await dbClient.auth.signInWithPassword({ email, password });
+    if (error) { alert('Ошибка: ' + error.message); btn.textContent = 'Войти'; return; }
+    currentUser = data.user;
+    await loadProfile();
+    showScreen('screen-premium');
+    updateProfileUI();
+  } else {
+    const { data, error } = await dbClient.auth.signUp({ email, password });
+    if (error) { alert('Ошибка: ' + error.message); btn.textContent = 'Создать аккаунт'; return; }
+    if (data.user) {
+      await dbClient.from('profiles').insert([{ id: data.user.id, nickname: 'Игрок', avatar: '🐴', is_premium: false }]);
+      alert('Аккаунт создан! Теперь войди.');
+      toggleAuthMode(); 
+    }
+  }
+  btn.textContent = isLoginMode ? 'Войти' : 'Создать аккаунт';
+}
+
+async function logout() {
+  await dbClient.auth.signOut();
+  currentUser = null;
+  userProfile = { nickname: '', avatar: '🐴', is_premium: false };
+  isPremium = false;
+  showScreen('screen-main');
+}
+
+async function deleteAccount() {
+  if (!confirm('Ты уверен? Аккаунт и премиум удалятся навсегда!')) return;
+  await dbClient.from('profiles').delete().eq('id', currentUser.id);
+  await logout();
+  alert('Аккаунт удален.');
+}
+
+// --- ПРОФИЛЬ ---
+async function loadProfile() {
+  const { data, error } = await dbClient.from('profiles').select('*').eq('id', currentUser.id).single();
+  if (data) {
+    userProfile = data;
+    isPremium = data.is_premium;
+  } else {
+    await dbClient.from('profiles').insert([{ id: currentUser.id, nickname: 'Игрок', avatar: '🐴', is_premium: false }]);
+    userProfile = { nickname: 'Игрок', avatar: '🐴', is_premium: false };
+    isPremium = false;
+  }
+}
+
+function updateProfileUI() {
+  document.getElementById('profile-content').style.display = 'block';
+  document.getElementById('premium-status').textContent = userProfile.is_premium ? 'Статус: ⭐ PREMIUM' : 'Статус: Обычный игрок';
+  document.getElementById('premium-status').style.color = userProfile.is_premium ? '#f39c12' : '#333';
+  document.getElementById('profile-nickname').value = userProfile.nickname || '';
+}
+
+async function saveNickname() {
+  const nick = document.getElementById('profile-nickname').value.trim();
+  if (!nick) return alert('Введи ник!');
+  const { error } = await dbClient.from('profiles').update({ nickname: nick }).eq('id', currentUser.id);
+  if (error) alert('Ошибка сохранения');
+  else { userProfile.nickname = nick; alert('Ник сохранен!'); }
+}
+
+async function setAvatar(emoji) {
+  const { error } = await dbClient.from('profiles').update({ avatar: emoji }).eq('id', currentUser.id);
+  if (error) alert('Ошибка сохранения');
+  else { userProfile.avatar = emoji; alert('Аватарка изменена на ' + emoji); }
+}
+
+// --- ПРЕМИУМ ---
+function codeSum(code) {
+  const clean = code.replace(/^DGS-/, '').replace(/-/g, '');
+  let sum = 0;
+  for(const ch of clean) {
+    if(ch >= 'A' && ch <= 'Z') sum += ch.charCodeAt(0) - 64;
+    else if(ch >= '0' && ch <= '9') sum += parseInt(ch);
+  }
+  return sum;
+}
+
+function generateCodeSum50() {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  while(true) {
+    let p1 = '', p2 = '';
+    for(let i=0;i<3;i++) p1 += chars.charAt(Math.floor(Math.random()*chars.length));
+    for(let i=0;i<3;i++) p2 += chars.charAt(Math.floor(Math.random()*chars.length));
+    const code = 'DGS-' + p1 + '-' + p2;
+    if(codeSum(code) === 50) return code;
+  }
+}
+
+async function activatePremium() {
+  if (!currentUser) return alert('Сначала войди в аккаунт!');
+  const code = document.getElementById('promoCode').value.trim().toUpperCase();
+
+  if(code === 'BOSS2026') {
+    const newCode = generateCodeSum50();
+    prompt('Твой новый промокод (продай за 50₽):', newCode);
+    return;
+  }
+
+  if(!/^DGS-[A-Z0-9]{3}-[A-Z0-9]{3}$/.test(code) || codeSum(code) !== 50) {
+    alert('❌ Неверный код!');
+    return;
+  }
+
+  const { error } = await dbClient.from('profiles').update({ is_premium: true }).eq('id', currentUser.id);
+  if (error) alert('Ошибка сервера');
+  else {
+    userProfile.is_premium = true;
+    isPremium = true;
+    alert('🎉 Premium активирован на твоем аккаунте!');
+    updateProfileUI();
+  }
+}
+
+// --- ОБЩИЕ ФУНКЦИИ ---
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function backToMenu() { showScreen('screen-main'); }
+function tryCheckers() {
+  if(!isPremium) document.getElementById('modal').classList.add('active');
+  else { showScreen('screen-checkers'); initCheckers(); }
+}
+function closeModal() { document.getElementById('modal').classList.remove('active'); }
+function inviteFriend() {
+  const siteUrl = "https://allgames1.neocities.org/";
+  const message = `Эй, давай поиграем, заходи🌹 ${siteUrl}`;
+  if (navigator.share) navigator.share({ title: 'All Games', text: 'Эй, давай поиграем, заходи🌹', url: siteUrl });
+  else { navigator.clipboard.writeText(message); alert('Ссылка скопирована!'); }
+}
+
+// --- ИГРЫ ---
+let currentMode='',currentGame='';
+function showSelect(mode){currentMode=mode;document.getElementById('select-title').textContent=mode==='online'?'Выбери игру (Сеть)':'Выбери игру (Бот)';document.getElementById('checkers-option').textContent=isPremium?'🔵 Шашки (Открыто)':'🔵 Шашки 🔒';showScreen('screen-select');}
+function startGame(game){currentGame=game;if(currentMode==='online'){document.getElementById('net-title').textContent=game==='ttt'?'❌ Крестики-нолики':'🔴 4 в ряд';document.getElementById('net-menu').style.display='block';document.getElementById('net-game').style.display='none';document.getElementById('joinCode').value='';showScreen('screen-net');}else{document.getElementById('bot-title').textContent=game==='ttt'?'❌ Против бота':'🔴 Против бота';showScreen('screen-bot');initBotGame();}}
+
+let roomCode='',isMyTurn=false,mySymbol='',netGameOver=false,channel=null;
+async function createNetGame(){
+    if(!dbClient){alert('Сеть недоступна');return;}
+    roomCode=Math.floor(1000+Math.random()*9000).toString();mySymbol='X';isMyTurn=true;
+    const{error}=await dbClient.from('games').insert([{id:currentGame+'_'+roomCode,turn:'X',board:'',premium:true}]);
+    if(error){alert('Ошибка БД: '+error.message);return;}
+    document.getElementById('net-menu').innerHTML=`<p>Твой код:</p><div class="code-box">${roomCode}</div>`;
+    document.getElementById('net-game').style.display='block';document.getElementById('net-status').textContent='Ждем друга...';listenToGame();
+}
+async function joinNetGame(){
+    if(!dbClient){alert('Сеть недоступна');return;}
+    const code=document.getElementById('joinCode').value.trim();if(!code)return alert('Введи код!');
+    roomCode=code;mySymbol='O';isMyTurn=false;
+    const{data,error}=await dbClient.from('games').select('*').eq('id',currentGame+'_'+roomCode).single();
+    if(error||!data){alert('Комната не найдена!');return;}
+    document.getElementById('net-menu').style.display='none';document.getElementById('net-game').style.display='block';listenToGame();
+}
+function listenToGame(){if(channel)dbClient.removeChannel(channel);channel=dbClient.channel('game').on('postgres_changes',{event:'UPDATE',schema:'public',table:'games',filter:`id=eq.${currentGame}_${roomCode}`},payload=>{const data=payload.new;if(currentGame==='ttt'){tttN=data.board?data.board.split(','):['','','','','','','','',''];drawTTTN();if(data.turn===mySymbol){isMyTurn=true;document.getElementById('net-status').textContent='Твой ход ('+(mySymbol==='X'?'❌':'⭕')+')';}else{isMyTurn=false;document.getElementById('net-status').textContent='Ход друга...';}checkTTTN();}if(currentGame==='c4'){c4N=data.board?JSON.parse(data.board):Array.from({length:6},()=>Array(7).fill(''));drawC4N();if(data.turn===mySymbol){isMyTurn=true;document.getElementById('net-status').textContent='Твой ход ('+(mySymbol==='X'?'🔴':'🟡')+')';}else{isMyTurn=false;document.getElementById('net-status').textContent='Ход друга...';}checkC4N();}}).subscribe();}
+let tttN=[];
+function drawTTTN(){const b=document.getElementById('net-board');b.className='ttt-grid';b.innerHTML='';for(let i=0;i<9;i++){const btn=document.createElement('button');btn.className='ttt-cell';btn.textContent=tttN[i]==='X'?'❌':tttN[i]==='O'?'⭕':'';btn.onclick=()=>clickTTTN(i);b.appendChild(btn);}}
+async function clickTTTN(i){if(!isMyTurn||netGameOver||tttN[i]!=='')return;tttN[i]=mySymbol;drawTTTN();const nextTurn=mySymbol==='X'?'O':'X';await dbClient.from('games').update({board:tttN.join(','),turn:nextTurn}).eq('id','ttt_'+roomCode);}
+function checkTTTN(){const lines=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];for(let[a,b,c]of lines)if(tttN[a]&&tttN[a]===tttN[b]&&tttN[a]===tttN[c]){netGameOver=true;document.getElementById('net-status').textContent=tttN[a]===mySymbol?'🎉 Победа!':'😔 Проигрыш!';return true;}if(!tttN.includes('')){netGameOver=true;document.getElementById('net-status').textContent='🤝 Ничья!';return true;}return false;}
+let c4N=[];
+function drawC4N(){const b=document.getElementById('net-board');b.className='c4-grid';b.innerHTML='';for(let r=0;r<6;r++)for(let c=0;c<7;c++){const cell=document.createElement('button');cell.className='c4-cell';if(c4N[r][c]==='R')cell.classList.add('red');if(c4N[r][c]==='Y')cell.classList.add('yellow');cell.onclick=()=>clickC4N(c);b.appendChild(cell);}}
+async function clickC4N(col){if(!isMyTurn||netGameOver)return;let row=-1;for(let r=5;r>=0;r--)if(c4N[r][col]===''){row=r;break;}if(row===-1)return;const sym=(mySymbol==='X')?'R':'Y';c4N[row][col]=sym;drawC4N();const nextTurn=mySymbol==='X'?'O':'X';await dbClient.from('games').update({board:JSON.stringify(c4N),turn:nextTurn}).eq('id','c4_'+roomCode);}
+function checkC4N(){let winSym=null;for(let r=0;r<6;r++)for(let c=0;c<=3;c++)if(c4N[r][c]&&c4N[r][c]===c4N[r][c+1]&&c4N[r][c]===c4N[r][c+2]&&c4N[r][c]===c4N[r][c+3])winSym=c4N[r][c];for(let c=0;c<7;c++)for(let r=0;r<=2;r++)if(c4N[r][c]&&c4N[r][c]===c4N[r+1][c]&&c4N[r][c]===c4N[r+2][c]&&c4N[r][c]===c4N[r+3][c])winSym=c4N[r][c];for(let r=0;r<=2;r++)for(let c=0;c<=3;c++)if(c4N[r][c]&&c4N[r][c]===c4N[r+1][c+1]&&c4N[r][c]===c4N[r+2][c+2]&&c4N[r][c]===c4N[r+3][c+3])winSym=c4N[r][c];for(let r=0;r<=2;r++)for(let c=3;c<7;c++)if(c4N[r][c]&&c4N[r][c]===c4N[r+1][c-1]&&c4N[r][c]===c4N[r+2][c-2]&&c4N[r][c]===c4N[r+3][c-3])winSym=c4N[r][c];if(winSym){netGameOver=true;const myColor=(mySymbol==='X')?'R':'Y';document.getElementById('net-status').textContent=(winSym===myColor)?'🎉 Победа!':'😔 Проигрыш!';return true;}if(c4N[0].every(cell=>cell!=='')){netGameOver=true;document.getElementById('net-status').textContent='🤝 Ничья!';return true;}return false;}
+let botB=[],botOver=false,botTurn=true;
+function initBotGame(){botOver=false;botTurn=true;document.getElementById('bot-restart').style.display='none';if(currentGame==='ttt'){botB=['','','','','','','','',''];drawTTTB();document.getElementById('bot-status').textContent='Твой ход (❌)';}else{botB=Array.from({length:6},()=>Array(7).fill(''));drawC4B();document.getElementById('bot-status').textContent='Твой ход (🔴)';}}
+function drawTTTB(){const b=document.getElementById('bot-board');b.className='ttt-grid';b.innerHTML='';for(let i=0;i<9;i++){const btn=document.createElement('button');btn.className='ttt-cell';btn.textContent=botB[i]==='X'?'❌':botB[i]==='O'?'⭕':'';btn.onclick=()=>clickTTTB(i);b.appendChild(btn);}}
+function clickTTTB(i){if(!botTurn||botOver||botB[i]!=='')return;botB[i]='X';botTurn=false;drawTTTB();if(checkTTTB())return;document.getElementById('bot-status').textContent='Бот думает... 🤔';setTimeout(moveTTTB,500);}
+function moveTTTB(){if(botOver)return;let bestScore=-Infinity,bestMove=-1;for(let i=0;i<9;i++){if(botB[i]===''){botB[i]='O';let score=minimax(botB,0,false);botB[i]='';if(score>bestScore){bestScore=score;bestMove=i;}}}if(bestMove!==-1)botB[bestMove]='O';drawTTTB();botTurn=true;if(!checkTTTB())document.getElementById('bot-status').textContent='Твой ход (❌)';}
+function minimax(board,depth,isMax){const w=checkTTTBWin(board);if(w==='O')return 10-depth;if(w==='X')return depth-10;if(!board.includes(''))return 0;if(isMax){let best=-Infinity;for(let i=0;i<9;i++)if(board[i]===''){board[i]='O';best=Math.max(best,minimax(board,depth+1,false));board[i]='';}return best;}else{let best=Infinity;for(let i=0;i<9;i++)if(board[i]===''){board[i]='X';best=Math.min(best,minimax(board,depth+1,true));board[i]='';}return best;}}
+function checkTTTB(){const w=checkTTTBWin(botB);if(w){const el=document.getElementById('bot-status');if(w==='draw')el.textContent='Ничья! 🤝';else if(w==='X')el.textContent='Ты победил! 🎉';else{el.textContent='Бот победил! 🤖';document.getElementById('bot-restart').style.display='block';}botOver=true;return true;}return false;}
+function checkTTTBWin(b){const lines=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];for(let[a,b1,c]of lines)if(b[a]&&b[a]===b[b1]&&b[a]===b[c])return b[a];if(!b.includes(''))return 'draw';return null;}
+function drawC4B(){const b=document.getElementById('bot-board');b.className='c4-grid';b.innerHTML='';for(let r=0;r<6;r++)for(let c=0;c<7;c++){const cell=document.createElement('button');cell.className='c4-cell';if(botB[r][c]==='R')cell.classList.add('red');if(botB[r][c]==='Y')cell.classList.add('yellow');cell.onclick=()=>clickC4B(c);b.appendChild(cell);}}
+function clickC4B(col){if(!botTurn||botOver)return;let row=-1;for(let r=5;r>=0;r--)if(botB[r][col]===''){row=r;break;}if(row===-1)return;botB[row][col]='R';botTurn=false;drawC4B();if(checkC4B())return;document.getElementById('bot-status').textContent='Бот думает... 🤔';setTimeout(moveC4B,600);}
+function moveC4B(){if(botOver)return;let move=-1;let winMove=-1,blockMove=-1;for(let c=0;c<7;c++){let r=-1;for(let rr=5;rr>=0;rr--)if(botB[rr][c]===''){r=rr;break;}if(r===-1)continue;botB[r][c]='Y';if(checkC4BWin(botB)==='Y')winMove=c;botB[r][c]='R';if(checkC4BWin(botB)==='R')blockMove=c;botB[r][c]='';}if(winMove!==-1)move=winMove;else if(blockMove!==-1)move=blockMove;else{const avail=[];for(let c=0;c<7;c++)if(botB[0][c]==='')avail.push(c);move=avail.includes(3)?3:avail[Math.floor(Math.random()*avail.length)];}for(let r=5;r>=0;r--)if(botB[r][move]===''){botB[r][move]='Y';break;}drawC4B();botTurn=true;if(!checkC4B())document.getElementById('bot-status').textContent='Твой ход (🔴)';}
+function checkC4B(){const w=checkC4BWin(botB);if(w){const el=document.getElementById('bot-status');if(w==='draw')el.textContent='Ничья! 🤝';else if(w==='R')el.textContent='Ты победил! 🎉';else{el.textContent='Бот победил! 🤖';document.getElementById('bot-restart').style.display='block';}botOver=true;return true;}return false;}
+function checkC4BWin(board){for(let r=0;r<6;r++)for(let c=0;c<=3;c++)if(board[r][c]&&board[r][c]===board[r][c+1]&&board[r][c]===board[r][c+2]&&board[r][c]===board[r][c+3])return board[r][c];for(let c=0;c<7;c++)for(let r=0;r<=2;r++)if(board[r][c]&&board[r][c]===board[r+1][c]&&board[r][c]===board[r+2][c]&&board[r][c]===board[r+3][c])return board[r][c];for(let r=0;r<=2;r++)for(let c=0;c<=3;c++)if(board[r][c]&&board[r][c]===board[r+1][c+1]&&board[r][c]===board[r+2][c+2]&&board[r][c]===board[r+3][c+3])return board[r][c];for(let r=0;r<=2;r++)for(let c=3;c<7;c++)if(board[r][c]&&board[r][c]===board[r+1][c-1]&&board[r][c]===board[r+2][c-2]&&board[r][c]===board[r+3][c-3])return board[r][c];if(board[0].every(cell=>cell!==''))return 'draw';return null;}
+let chkB=[],chkPlayer='red',chkSel=null;
+function initCheckers(){chkB=Array.from({length:8},()=>Array(8).fill(null));for(let r=0;r<3;r++)for(let c=0;c<8;c++)if((r+c)%2!==0)chkB[r][c]={color:'blue',king:false};for(let r=5;r<8;r++)for(let c=0;c<8;c++)if((r+c)%2!==0)chkB[r][c]={color:'red',king:false};chkPlayer='red';chkSel=null;document.getElementById('checkers-status').textContent='Ходят Красные 🔴';drawCheckers();}
+function drawCheckers(){const b=document.getElementById('checkers-board');b.innerHTML='';for(let r=0;r<8;r++)for(let c=0;c<8;c++){const cell=document.createElement('div');cell.className='checkers-cell '+((r+c)%2===0?'white':'black');if(chkSel&&chkSel.r===r&&chkSel.c===c)cell.classList.add('selected');if(chkSel&&isValidChk(chkSel.r,chkSel.c,r,c))cell.classList.add('valid-move');const piece=chkB[r][c];if(piece){const p=document.createElement('div');p.className='checker-piece '+piece.color;if(piece.king)p.classList.add('king');cell.appendChild(p);}cell.onclick=()=>clickChk(r,c);b.appendChild(cell);}}
+function clickChk(r,c){const piece=chkB[r][c];if(piece&&piece.color===chkPlayer){chkSel={r,c};drawCheckers();return;}if(chkSel&&isValidChk(chkSel.r,chkSel.c,r,c)){const p=chkB[chkSel.r][chkSel.c];chkB[r][c]=p;chkB[chkSel.r][chkSel.c]=null;if(p.color==='red'&&r===0)p.king=true;if(p.color==='blue'&&r===7)p.king=true;chkSel=null;chkPlayer=chkPlayer==='red'?'blue':'red';document.getElementById('checkers-status').textContent=chkPlayer==='red'?'Ходят Красные 🔴':'Ходят Синие 🔵';drawCheckers();return;}chkSel=null;drawCheckers();}
+function isValidChk(fr,fc,tr,tc){const p=chkB[fr][fc];if(!p||chkB[tr][tc])return false;const dr=tr-fr,dc=tc-fc;if(Math.abs(dr)===1&&Math.abs(dc)===1){if(p.king)return true;if(p.color==='red'&&dr===-1)return true;if(p.color==='blue'&&dr===1)return true;}return false;}
+let drawCanvas,ctx,isDrawing=false;
+function initDraw(){drawCanvas=document.getElementById('draw-canvas');ctx=drawCanvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,300,300);ctx.strokeStyle='#333';ctx.lineWidth=3;ctx.lineCap='round';drawCanvas.onpointerdown=(e)=>{isDrawing=true;ctx.beginPath();ctx.moveTo(e.offsetX,e.offsetY);};drawCanvas.onpointermove=(e)=>{if(isDrawing){ctx.lineTo(e.offsetX,e.offsetY);ctx.stroke();}};drawCanvas.onpointerup=()=>{isDrawing=false;};drawCanvas.onpointerleave=()=>{isDrawing=false;};document.getElementById('draw-status').textContent='Нарисуй что-нибудь!';}
+function clearCanvas(){if(ctx){ctx.fillStyle='#fff';ctx.fillRect(0,0,300,300);}}
+function botGuess(){if(!ctx){document.getElementById('draw-status').textContent='Сначала нарисуй!';return;}const data=ctx.getImageData(0,0,300,300).data;let dark=0,top=0,bottom=0,left=0,right=0,center=0;for(let y=0;y<300;y+=4){for(let x=0;x<300;x+=4){const i=(y*300+x)*4;const lum=(data[i]+data[i+1]+data[i+2])/3;if(lum<200){dark++;if(y<100)top++;else if(y>200)bottom++;if(x<100)left++;else if(x>200)right++;if(x>100&&x<200&&y>100&&y<200)center++;}}}if(dark<10){document.getElementById('draw-status').textContent='Бот говорит: Ты ничего не нарисовал! 🙈';return;}const total=dark;const guesses=[{text:'Это похоже на кота 🐱',check:()=>center>total*0.3&&left>total*0.15&&right>total*0.15},{text:'Это точно пони 🐴',check:()=>center>total*0.4},{text:'Похоже на пиццу 🍕',check:()=>center>total*0.5&&top>total*0.1},{text:'Это звезда ⭐',check:()=>center>total*0.35&&top>total*0.2&&bottom>total*0.2},{text:'Это смайлик 😊',check:()=>center>total*0.45&&left>total*0.1&&right>total*0.1},{text:'Я вижу дом 🏠',check:()=>bottom>total*0.4&&left>total*0.1&&right>total*0.1},{text:'Мне кажется, это солнце ☀️',check:()=>center>total*0.6},{text:'Это дерево 🌳',check:()=>bottom>total*0.5&&center>total*0.2},{text:'Это сердце ❤️',check:()=>center>total*0.55&&top>total*0.15},{text:'Это машина 🚗',check:()=>bottom>total*0.35&&left>total*0.2&&right>total*0.2}];let best=null,bestScore=-1;for(const g of guesses){let score=0;if(g.check())score=total;if(score>bestScore){bestScore=score;best=g;}}const fallback=['Это что-то абстрактное 🎨','Я вижу линию 📏','Похоже на каракули ✏️','Это точно шедевр 🖼️'];document.getElementById('draw-status').textContent='Бот говорит: '+(best?best.text:fallback[Math.floor(Math.random()*fallback.length)]);}
+
+// Запуск проверки авторизации при загрузке
+checkAuth();
+</script>
+</body>
+</html>
