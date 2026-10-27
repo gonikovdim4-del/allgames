@@ -7,7 +7,7 @@
 
 <!-- Иконка сайта и настройки для телефона -->
 <link rel="icon" type="image/jpeg" href="Screenshot_20261027-093037.jpg">
-<meta property="og:image" content="https://allgames1.neocities.org/Screenshot_20261027-093037.jpg">
+<meta property="og:image" content="https://gonikovdim4-del.github.io/allgames/Screenshot_20261027-093037.jpg">
 <meta name="theme-color" content="#ffffff">
 <meta name="mobile-web-app-capable" content="yes">
 
@@ -293,8 +293,10 @@ function tryCheckers() {
   else { showScreen('screen-checkers'); initCheckers(); }
 }
 function closeModal() { document.getElementById('modal').classList.remove('active'); }
+
+// ВОТ ТУТ НОВАЯ ССЫЛКА
 function inviteFriend() {
-  const siteUrl = "https://allgames1.neocities.org/";
+  const siteUrl = "https://gonikovdim4-del.github.io/allgames/";
   const message = `Эй, давай поиграем, заходи🌹 ${siteUrl}`;
   if (navigator.share) navigator.share({ title: 'All Games', text: 'Эй, давай поиграем, заходи🌹', url: siteUrl });
   else { navigator.clipboard.writeText(message); alert('Ссылка скопирована!'); }
@@ -358,4 +360,4 @@ function botGuess(){if(!ctx){document.getElementById('draw-status').textContent=
 checkAuth();
 </script>
 </body>
-</html>
+  </html>
