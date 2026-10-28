@@ -155,10 +155,44 @@ function openProfile() { if (currentUser) { showScreen('screen-premium'); update
 function toggleAuthMode(e) { if(e) e.preventDefault(); isLoginMode = !isLoginMode; document.getElementById('auth-title').textContent = isLoginMode ? 'Вход' : 'Регистрация'; document.getElementById('auth-submit-btn').textContent = isLoginMode ? 'Войти' : 'Создать'; document.getElementById('auth-switch-text').textContent = isLoginMode ? 'Нет аккаунта?' : 'Есть аккаунт?'; document.getElementById('auth-switch-btn').textContent = isLoginMode ? 'Зарегистрироваться' : 'Войти'; }
 async function handleAuth() { const email = document.getElementById('auth-email').value.trim(), pass = document.getElementById('auth-password').value.trim(); if (!email || !pass) return alert('Заполни поля!'); const btn = document.getElementById('auth-submit-btn'); btn.textContent = 'Загрузка...'; if (isLoginMode) { const { data, error } = await dbClient.auth.signInWithPassword({ email, password: pass }); if (error) { alert('Ошибка: ' + error.message); btn.textContent = 'Войти'; return; } currentUser = data.user; await loadProfile(); showScreen('screen-premium'); updateProfileUI(); } else { const { data, error } = await dbClient.auth.signUp({ email, password: pass }); if (error) { alert('Ошибка: ' + error.message); btn.textContent = 'Создать'; return; } if (data.user) { await dbClient.from('profiles').insert([{ id: data.user.id, nickname: 'Игрок', avatar: '🐴', is_premium: false }]); alert('Создан! Войди.'); toggleAuthMode(); } } btn.textContent = isLoginMode ? 'Войти' : 'Создать'; }
 async function logout() { await dbClient.auth.signOut(); currentUser = null; userProfile = { nickname: '', avatar: '🐴', is_premium: false }; isPremium = false; showScreen('screen-main'); }
-async function deleteAccount() { if (!confirm('Удалить аккаунт?')) return; await dbClient.from('profiles').delete().eq('id', currentUser.id); await logout(); alert('Удален.'); }
-async function loadProfile() { const { data } = await dbClient.from('profiles').select('*').eq('id', currentUser.id).single(); if (data) { userProfile = data; isPremium = data.is_premium; } else { await dbClient.from('profiles').insert([{ id: currentUser.id, nickname: 'Игрок', avatar: '🐴', is_premium: false }]); userProfile = { nickname: 'Игрок', avatar: '🐴', is_premium: false }; isPremium = false; } }
+
+async function deleteAccount() {
+  if (!confirm('Удалить аккаунт?')) return;
+  await dbClient.from('profiles').delete().eq('id', currentUser.id);
+  await dbClient.auth.signOut();
+  currentUser = null;
+  userProfile = { nickname: '', avatar: '🐴', is_premium: false };
+  isPremium = false;
+  alert('Аккаунт удален.');
+  showScreen('screen-main');
+}
+
+async function loadProfile() {
+  const { data, error } = await dbClient.from('profiles').select('*').eq('id', currentUser.id).single();
+  if (error) { console.log("Ошибка загрузки профиля:", error); }
+  if (data) {
+    userProfile = data; isPremium = data.is_premium;
+  } else {
+    const { error: insertError } = await dbClient.from('profiles').insert([{ id: currentUser.id, nickname: 'Игрок', avatar: '🐴', is_premium: false }]);
+    if (insertError) console.log("Ошибка создания профиля:", insertError);
+    userProfile = { nickname: 'Игрок', avatar: '🐴', is_premium: false }; isPremium = false;
+  }
+}
+
 function updateProfileUI() { document.getElementById('profile-content').style.display = 'block'; document.getElementById('premium-status').textContent = userProfile.is_premium ? 'Статус: ⭐ PREMIUM' : 'Статус: Обычный'; document.getElementById('premium-status').style.color = userProfile.is_premium ? '#f39c12' : '#333'; document.getElementById('profile-nickname').value = userProfile.nickname || ''; }
-async function saveNickname() { const nick = document.getElementById('profile-nickname').value.trim(); if (!nick) return alert('Введи ник!'); const { error } = await dbClient.from('profiles').update({ nickname: nick }).eq('id', currentUser.id); if (error) alert('Ошибка: ' + error.message); else { userProfile.nickname = nick; alert('Сохранено!'); } }
+
+async function saveNickname() {
+  const nick = document.getElementById('profile-nickname').value.trim();
+  if (!nick) return alert('Введи ник!');
+  if (!currentUser) return alert('Ошибка: ты не авторизован!');
+
+  const { data, error } = await dbClient.from('profiles').update({ nickname: nick }).eq('id', currentUser.id).select();
+
+  if (error) { alert('Ошибка БД: ' + error.message); }
+  else if (data && data.length === 0) { alert('Ошибка: профиль не найден в базе. Попробуй перезайти в аккаунт.'); }
+  else { userProfile.nickname = nick; alert('Ник сохранен!'); document.getElementById('profile-nickname').value = nick; }
+}
+
 async function setAvatar(emoji) { const { error } = await dbClient.from('profiles').update({ avatar: emoji }).eq('id', currentUser.id); if (error) alert('Ошибка'); else { userProfile.avatar = emoji; alert('Аватарка: ' + emoji); } }
 
 function codeSum(code) { const clean = code.replace(/^DGS-/, '').replace(/-/g, ''); let sum = 0; for(const ch of clean) { if(ch >= 'A' && ch <= 'Z') sum += ch.charCodeAt(0) - 64; else if(ch >= '0' && ch <= '9') sum += parseInt(ch); } return sum; }
@@ -203,11 +237,15 @@ function initJenga() {
         jengaBlocks.push(block); board.appendChild(block);
     }
 }
+
+// ИСПРАВЛЕННАЯ ФУНКЦИЯ ДЖЕНГИ
 function pullBlock(blockEl) {
     if (!jengaTurn || jengaOver || blockEl.style.opacity === '0.3') return;
     blockEl.style.transform = 'translateX(80px) rotate(15deg)'; blockEl.style.opacity = '0.3'; blockEl.style.pointerEvents = 'none';
 
-    if (Math.random() > 0.5) { // Проигрыш
+    const blocksLeft = jengaBlocks.filter(b => b.style.opacity !== '0.3').length;
+
+    if (blocksLeft <= 6 && Math.random() > 0.7) { // Падает только в конце и с шансом 30%
         jengaOver = true; jengaTurn = false;
         document.getElementById('jenga-status').textContent = '💥 Башня упала! Ты проиграл!'; document.getElementById('jenga-status').style.color = '#e74c3c';
         document.getElementById('jenga-restart').style.display = 'block';
@@ -216,8 +254,23 @@ function pullBlock(blockEl) {
         jengaTurn = false; document.getElementById('jenga-status').textContent = 'Бот думает... 🤔';
         setTimeout(() => {
             const avail = jengaBlocks.filter(b => b.style.opacity !== '0.3');
-            if (avail.length > 0) { const rand = avail[Math.floor(Math.random() * avail.length)]; rand.style.transform = 'translateX(-80px) rotate(-15deg)'; rand.style.opacity = '0.3'; rand.style.pointerEvents = 'none'; }
-            jengaTurn = true; if(!jengaOver) { document.getElementById('jenga-status').textContent = 'Твой ход!'; document.getElementById('jenga-status').style.color = '#333'; }
+            if (avail.length > 0) { 
+                const rand = avail[Math.floor(Math.random() * avail.length)]; 
+                rand.style.transform = 'translateX(-80px) rotate(-15deg)'; 
+                rand.style.opacity = '0.3'; 
+                rand.style.pointerEvents = 'none'; 
+            }
+            
+            const blocksLeftAfterBot = jengaBlocks.filter(b => b.style.opacity !== '0.3').length;
+            if (blocksLeftAfterBot <= 0) {
+                 jengaOver = true; jengaTurn = false;
+                 document.getElementById('jenga-status').textContent = '🏆 Ты выиграл! Башня выстояла!'; 
+                 document.getElementById('jenga-status').style.color = '#2ecc71';
+                 document.getElementById('jenga-restart').style.display = 'block';
+            } else {
+                jengaTurn = true; 
+                if(!jengaOver) { document.getElementById('jenga-status').textContent = 'Твой ход!'; document.getElementById('jenga-status').style.color = '#333'; }
+            }
         }, 1000);
     }
 }
@@ -232,14 +285,23 @@ function initDraw() {
     drawCanvas.onpointerup = () => isDrawing = false; drawCanvas.onpointerleave = () => isDrawing = false;
     document.getElementById('draw-status').textContent = 'Нарисуй что-нибудь!';
 }
-function clearCanvas() { if (ctx) { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, 300, 300); } }
+
+// ИСПРАВЛЕННАЯ ОЧИСТКА
+function clearCanvas() { 
+    if (ctx) { 
+        ctx.fillStyle = '#fff'; 
+        ctx.fillRect(0, 0, 300, 300); 
+        // Сбрасываем статус бота
+        document.getElementById('draw-status').textContent = 'Нарисуй что-нибудь!';
+    } 
+}
+
 function botGuess() {
     if (!ctx) { document.getElementById('draw-status').textContent = 'Сначала нарисуй!'; return; }
     const data = ctx.getImageData(0, 0, 300, 300).data; let dark = 0, top = 0, bottom = 0, left = 0, right = 0, center = 0;
     for (let y = 0; y < 300; y += 4) for (let x = 0; x < 300; x += 4) { const i = (y * 300 + x) * 4; const lum = (data[i] + data[i + 1] + data[i + 2]) / 3; if (lum < 200) { dark++; if (y < 100) top++; else if (y > 200) bottom++; if (x < 100) left++; else if (x > 200) right++; if (x > 100 && x < 200 && y > 100 && y < 200) center++; } }
     if (dark < 10) { document.getElementById('draw-status').textContent = 'Бот говорит: Ты ничего не нарисовал! 🙈'; return; }
     const total = dark;
-    // РАСШИРЕННЫЙ СПИСОК ОТВЕТОВ
     const guesses = [
         { text: 'Это похоже на кота 🐱', check: () => center > total * 0.3 && left > total * 0.15 && right > total * 0.15 },
         { text: 'Это точно пони 🐴', check: () => center > total * 0.4 },
@@ -274,7 +336,7 @@ async function createNetGame(){
     roomCode=Math.floor(1000+Math.random()*9000).toString();mySymbol='X';isMyTurn=true;
     
     let initialBoard = '';
-    if (currentGame === 'jenga') initialBoard = JSON.stringify(new Array(18).fill(false)); // false = блок на месте
+    if (currentGame === 'jenga') initialBoard = JSON.stringify(new Array(18).fill(false));
 
     const{error}=await dbClient.from('games').insert([{id:currentGame+'_'+roomCode,turn:'X',board:initialBoard,premium:true}]);
     if(error){alert('Ошибка БД: '+error.message);return;}
@@ -340,17 +402,11 @@ function drawNetJenga(state) {
         board.appendChild(block);
     });
 }
-
 async function clickNetJenga(index, currentState) {
     if (!isMyTurn || netGameOver) return;
-    
-    // Если блок уже вытащен
     if (currentState[index]) return;
-
-    // Обновляем состояние
     currentState[index] = true;
     drawNetJenga(currentState);
-
     const nextTurn = mySymbol === 'X' ? 'O' : 'X';
     await dbClient.from('games').update({board: JSON.stringify(currentState), turn: nextTurn}).eq('id', 'jenga_'+roomCode);
 }
@@ -401,14 +457,7 @@ function drawCheckers(){const b=document.getElementById('checkers-board');b.inne
 function clickChk(r,c){const piece=chkB[r][c];if(piece&&piece.color===chkPlayer){chkSel={r,c};drawCheckers();return;}if(chkSel&&isValidChk(chkSel.r,chkSel.c,r,c)){const p=chkB[chkSel.r][chkSel.c];chkB[r][c]=p;chkB[chkSel.r][chkSel.c]=null;if(p.color==='red'&&r===0)p.king=true;if(p.color==='blue'&&r===7)p.king=true;chkSel=null;chkPlayer=chkPlayer==='red'?'blue':'red';document.getElementById('checkers-status').textContent=chkPlayer==='red'?'Ходят Красные 🔴':'Ходят Синие 🔵';drawCheckers();return;}chkSel=null;drawCheckers();}
 function isValidChk(fr,fc,tr,tc){const p=chkB[fr][fc];if(!p||chkB[tr][tc])return false;const dr=tr-fr,dc=tc-fc;if(Math.abs(dr)===1&&Math.abs(dc)===1){if(p.king)return true;if(p.color==='red'&&dr===-1)return true;if(p.color==='blue'&&dr===1)return true;}return false;}
 
-// Модалка для шашек
-if(!document.getElementById('modal')) {
-  const modal = document.createElement('div'); modal.id='modal'; modal.className='modal';
-  modal.innerHTML = '<div class="modal-content"><h3 style="color:#e74c3c;margin-bottom:10px;">🔒 Доступ закрыт</h3><p>Эта функция доступна только с Premium статусом!</p><button class="btn" onclick="closeModal()">Ок</button></div>';
-  document.body.appendChild(modal);
-}
-
 checkAuth();
 </script>
 </body>
-</html>
+  </html>
