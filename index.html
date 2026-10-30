@@ -15,12 +15,7 @@
 *{margin:0;padding:0;box-sizing:border-box}body{font-family:Arial,sans-serif;background:#f4f7f6;min-height:100vh;color:#333;padding:20px;display:flex;flex-direction:column;align-items:center;justify-content:center}h1{font-size:28px;margin-bottom:10px;color:#2c3e50;text-align:center}h2{font-size:22px;margin-bottom:15px;color:#2c3e50;text-align:center}.screen{display:none;width:100%;max-width:400px}.screen.active{display:block}.menu-btn{padding:18px;font-size:18px;border:2px solid #3498db;border-radius:12px;background:#fff;color:#3498db;cursor:pointer;font-weight:bold;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:10px;width:100%;margin-bottom:12px}.menu-btn:hover{background:#e8f4fd}.menu-btn:active{transform:scale(.98)}.menu-btn.premium-btn{border-color:#f1c40f;color:#d35400;background:#fffdf0}.game-option{padding:15px;margin:10px 0;border:2px solid #3498db;border-radius:8px;background:#fff;color:#2c3e50;cursor:pointer;font-size:16px;font-weight:bold;transition:.2s;text-align:center}.game-option:hover{background:#e8f4fd}.game-option.locked{border-color:#e74c3c;color:#e74c3c}.btn{margin:10px 0;padding:15px;background:#3498db;border:none;border-radius:8px;color:#fff;font-size:16px;font-weight:bold;cursor:pointer;width:100%;display:block;text-align:center;text-decoration:none}.btn:active{background:#2980b9}.btn-back{background:#7f8c8d;font-size:14px;padding:10px}.btn-tg{background:linear-gradient(135deg,#229ED9,#4FC3F7)}.input-field{width:100%;padding:15px;margin:10px 0;border:2px solid #ccc;border-radius:8px;font-size:16px;text-align:center;font-family:inherit}.code-box{background:#2c3e50;color:#fff;padding:20px;border-radius:8px;font-size:32px;font-weight:bold;letter-spacing:8px;margin:15px 0;cursor:pointer;text-align:center}.status{font-size:18px;margin:15px 0;font-weight:bold;min-height:25px;text-align:center}.ttt-grid{display:grid;grid-template-columns:repeat(3,70px);gap:8px;justify-content:center;margin:0 auto}.ttt-cell{width:70px;height:70px;background:#f9f9f9;border:2px solid #3498db;border-radius:8px;font-size:35px;font-weight:bold;cursor:pointer;display:flex;align-items:center;justify-content:center}.c4-grid{display:grid;grid-template-columns:repeat(7,35px);grid-template-rows:repeat(6,35px);gap:4px;background:#3498db;padding:6px;border-radius:8px;justify-content:center;margin:0 auto}.c4-cell{width:35px;height:35px;background:#fff;border-radius:50%;cursor:pointer;border:none}.c4-cell.red{background:#e74c3c}.c4-cell.yellow{background:#f1c40f}.checkers-board{display:grid;grid-template-columns:repeat(8,30px);grid-template-rows:repeat(8,30px);border:3px solid #2c3e50;margin:0 auto;width:fit-content}.checkers-cell{width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer}.checkers-cell.white{background:#f0d9b5}.checkers-cell.black{background:#b58863}.checkers-cell.selected{box-shadow:inset 0 0 0 3px #2ecc71}.checkers-cell.valid-move{box-shadow:inset 0 0 0 3px #f1c40f}.checker-piece{width:22px;height:22px;border-radius:50%;border:2px solid #333;pointer-events:none}.checker-piece.red{background:#e74c3c}.checker-piece.blue{background:#3498db}.checker-piece.king{box-shadow:inset 0 0 0 2px #fff}.modal{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.7);display:none;justify-content:center;align-items:center;z-index:1000}.modal.active{display:flex}.modal-content{background:#fff;padding:25px;border-radius:12px;max-width:300px;width:90%;text-align:center}#draw-canvas{border:2px solid #3498db;border-radius:8px;background:#fff;touch-action:none;width:100%;max-width:300px;margin:0 auto;display:block;cursor:crosshair}.restart-btn{background:#e67e22;margin-top:10px;font-size:14px;padding:12px}
 
 /* Стили для Дженги */
-.jenga-block {
-  width: 120px; height: 25px; margin: 3px; border-radius: 4px;
-  cursor: pointer; border: 1px solid #8b5a2b;
-  transition: all 0.3s ease;
-  box-shadow: inset 0 -3px 0 rgba(0,0,0,0.1);
-}
+.jenga-block { width: 120px; height: 25px; margin: 3px; border-radius: 4px; cursor: pointer; border: 1px solid #8b5a2b; transition: all 0.3s ease; box-shadow: inset 0 -3px 0 rgba(0,0,0,0.1); }
 .jenga-block:hover { filter: brightness(1.1); }
 </style>
 </head>
@@ -142,9 +137,9 @@
 </div>
 
 <script>
-// --- БАЗА ДАННЫХ И АККАУНТЫ ---
+// --- ПРЯМОЕ ПОДКЛЮЧЕНИЕ К SUPABASE (БЕЗ CLOUDFLARE) ---
 const dbClient = window.supabase.createClient(
-  'https://aged-wood-b4a7.gonikovdim4.workers.dev', 
+  'https://etwlrixwfxxxcenvjqrx.supabase.co', 
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImV0d2xyaXh3Znh4eGNlbnZqcXJ4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI5NjY5MTUsImV4cCI6MjEwODU0MjkxNX0.4VGbos1SV7BuFLFLdZshPRIfOGqdHaQLu-7kB2IFEzM'
 );
 
@@ -155,55 +150,18 @@ function openProfile() { if (currentUser) { showScreen('screen-premium'); update
 function toggleAuthMode(e) { if(e) e.preventDefault(); isLoginMode = !isLoginMode; document.getElementById('auth-title').textContent = isLoginMode ? 'Вход' : 'Регистрация'; document.getElementById('auth-submit-btn').textContent = isLoginMode ? 'Войти' : 'Создать'; document.getElementById('auth-switch-text').textContent = isLoginMode ? 'Нет аккаунта?' : 'Есть аккаунт?'; document.getElementById('auth-switch-btn').textContent = isLoginMode ? 'Зарегистрироваться' : 'Войти'; }
 async function handleAuth() { const email = document.getElementById('auth-email').value.trim(), pass = document.getElementById('auth-password').value.trim(); if (!email || !pass) return alert('Заполни поля!'); const btn = document.getElementById('auth-submit-btn'); btn.textContent = 'Загрузка...'; if (isLoginMode) { const { data, error } = await dbClient.auth.signInWithPassword({ email, password: pass }); if (error) { alert('Ошибка: ' + error.message); btn.textContent = 'Войти'; return; } currentUser = data.user; await loadProfile(); showScreen('screen-premium'); updateProfileUI(); } else { const { data, error } = await dbClient.auth.signUp({ email, password: pass }); if (error) { alert('Ошибка: ' + error.message); btn.textContent = 'Создать'; return; } if (data.user) { await dbClient.from('profiles').insert([{ id: data.user.id, nickname: 'Игрок', avatar: '🐴', is_premium: false }]); alert('Создан! Войди.'); toggleAuthMode(); } } btn.textContent = isLoginMode ? 'Войти' : 'Создать'; }
 async function logout() { await dbClient.auth.signOut(); currentUser = null; userProfile = { nickname: '', avatar: '🐴', is_premium: false }; isPremium = false; showScreen('screen-main'); }
-
-async function deleteAccount() {
-  if (!confirm('Удалить аккаунт?')) return;
-  await dbClient.from('profiles').delete().eq('id', currentUser.id);
-  await dbClient.auth.signOut();
-  currentUser = null;
-  userProfile = { nickname: '', avatar: '🐴', is_premium: false };
-  isPremium = false;
-  alert('Аккаунт удален.');
-  showScreen('screen-main');
-}
-
-async function loadProfile() {
-  const { data, error } = await dbClient.from('profiles').select('*').eq('id', currentUser.id).single();
-  if (error) { console.log("Ошибка загрузки профиля:", error); }
-  if (data) {
-    userProfile = data; isPremium = data.is_premium;
-  } else {
-    const { error: insertError } = await dbClient.from('profiles').insert([{ id: currentUser.id, nickname: 'Игрок', avatar: '🐴', is_premium: false }]);
-    if (insertError) console.log("Ошибка создания профиля:", insertError);
-    userProfile = { nickname: 'Игрок', avatar: '🐴', is_premium: false }; isPremium = false;
-  }
-}
-
+async function deleteAccount() { if (!confirm('Удалить аккаунт?')) return; await dbClient.from('profiles').delete().eq('id', currentUser.id); await dbClient.auth.signOut(); currentUser = null; userProfile = { nickname: '', avatar: '🐴', is_premium: false }; isPremium = false; alert('Аккаунт удален.'); showScreen('screen-main'); }
+async function loadProfile() { const { data, error } = await dbClient.from('profiles').select('*').eq('id', currentUser.id).single(); if (error) { console.log("Ошибка:", error); } if (data) { userProfile = data; isPremium = data.is_premium; } else { await dbClient.from('profiles').insert([{ id: currentUser.id, nickname: 'Игрок', avatar: '🐴', is_premium: false }]); userProfile = { nickname: 'Игрок', avatar: '🐴', is_premium: false }; isPremium = false; } }
 function updateProfileUI() { document.getElementById('profile-content').style.display = 'block'; document.getElementById('premium-status').textContent = userProfile.is_premium ? 'Статус: ⭐ PREMIUM' : 'Статус: Обычный'; document.getElementById('premium-status').style.color = userProfile.is_premium ? '#f39c12' : '#333'; document.getElementById('profile-nickname').value = userProfile.nickname || ''; }
-
-async function saveNickname() {
-  const nick = document.getElementById('profile-nickname').value.trim();
-  if (!nick) return alert('Введи ник!');
-  if (!currentUser) return alert('Ошибка: ты не авторизован!');
-
-  const { data, error } = await dbClient.from('profiles').update({ nickname: nick }).eq('id', currentUser.id).select();
-
-  if (error) { alert('Ошибка БД: ' + error.message); }
-  else if (data && data.length === 0) { alert('Ошибка: профиль не найден в базе. Попробуй перезайти в аккаунт.'); }
-  else { userProfile.nickname = nick; alert('Ник сохранен!'); document.getElementById('profile-nickname').value = nick; }
-}
-
+async function saveNickname() { const nick = document.getElementById('profile-nickname').value.trim(); if (!nick) return alert('Введи ник!'); if (!currentUser) return alert('Ошибка: ты не авторизован!'); const { data, error } = await dbClient.from('profiles').update({ nickname: nick }).eq('id', currentUser.id).select(); if (error) { alert('Ошибка БД: ' + error.message); } else if (data && data.length === 0) { alert('Ошибка: профиль не найден.'); } else { userProfile.nickname = nick; alert('Ник сохранен!'); document.getElementById('profile-nickname').value = nick; } }
 async function setAvatar(emoji) { const { error } = await dbClient.from('profiles').update({ avatar: emoji }).eq('id', currentUser.id); if (error) alert('Ошибка'); else { userProfile.avatar = emoji; alert('Аватарка: ' + emoji); } }
-
 function codeSum(code) { const clean = code.replace(/^DGS-/, '').replace(/-/g, ''); let sum = 0; for(const ch of clean) { if(ch >= 'A' && ch <= 'Z') sum += ch.charCodeAt(0) - 64; else if(ch >= '0' && ch <= '9') sum += parseInt(ch); } return sum; }
 function generateCodeSum50() { const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'; while(true) { let p1 = '', p2 = ''; for(let i=0;i<3;i++) p1 += chars.charAt(Math.floor(Math.random()*chars.length)); for(let i=0;i<3;i++) p2 += chars.charAt(Math.floor(Math.random()*chars.length)); const code = 'DGS-' + p1 + '-' + p2; if(codeSum(code) === 50) return code; } }
 async function activatePremium() { if (!currentUser) return alert('Войди в аккаунт!'); const code = document.getElementById('promoCode').value.trim().toUpperCase(); if(code === 'BOSS2026') { prompt('Новый код (продай за 50₽):', generateCodeSum50()); return; } if(!/^DGS-[A-Z0-9]{3}-[A-Z0-9]{3}$/.test(code) || codeSum(code) !== 50) return alert('❌ Неверный код!'); const { error } = await dbClient.from('profiles').update({ is_premium: true }).eq('id', currentUser.id); if (error) alert('Ошибка сервера'); else { userProfile.is_premium = true; isPremium = true; alert('🎉 PREMIUM!'); updateProfileUI(); } }
 
-// --- ОБЩИЕ ФУНКЦИИ ---
 function showScreen(id) { document.querySelectorAll('.screen').forEach(s => s.classList.remove('active')); document.getElementById(id).classList.add('active'); }
 function inviteFriend() { const siteUrl = "https://gonikovdim4-del.github.io/allgames/"; const message = `Эй, давай поиграем, заходи🌹 ${siteUrl}`; if (navigator.share) navigator.share({ title: 'All Games', text: 'Эй, давай поиграем, заходи🌹', url: siteUrl }); else { navigator.clipboard.writeText(message); alert('Скопировано!'); } }
 
-// --- ИГРЫ ---
 let currentMode = '', currentGame = '';
 function startGame(game, mode) {
     currentGame = game; currentMode = mode;
@@ -223,29 +181,19 @@ function startGame(game, mode) {
     }
 }
 
-// --- ДЖЕНГА (С БОТОМ) ---
 let jengaBlocks = [], jengaTurn = true, jengaOver = false;
 function initJenga() {
     jengaBlocks = []; jengaTurn = true; jengaOver = false;
     document.getElementById('jenga-status').textContent = 'Твой ход!'; document.getElementById('jenga-status').style.color = '#333';
     document.getElementById('jenga-restart').style.display = 'none';
     const board = document.getElementById('jenga-board'); board.innerHTML = '';
-    for (let i = 0; i < 18; i++) {
-        const block = document.createElement('div'); block.className = 'jenga-block';
-        block.style.background = i % 2 === 0 ? '#d4a373' : '#cc9a66';
-        block.onclick = () => pullBlock(block);
-        jengaBlocks.push(block); board.appendChild(block);
-    }
+    for (let i = 0; i < 18; i++) { const block = document.createElement('div'); block.className = 'jenga-block'; block.style.background = i % 2 === 0 ? '#d4a373' : '#cc9a66'; block.onclick = () => pullBlock(block); jengaBlocks.push(block); board.appendChild(block); }
 }
-
-// ИСПРАВЛЕННАЯ ФУНКЦИЯ ДЖЕНГИ
 function pullBlock(blockEl) {
     if (!jengaTurn || jengaOver || blockEl.style.opacity === '0.3') return;
     blockEl.style.transform = 'translateX(80px) rotate(15deg)'; blockEl.style.opacity = '0.3'; blockEl.style.pointerEvents = 'none';
-
     const blocksLeft = jengaBlocks.filter(b => b.style.opacity !== '0.3').length;
-
-    if (blocksLeft <= 6 && Math.random() > 0.7) { // Падает только в конце и с шансом 30%
+    if (blocksLeft <= 6 && Math.random() > 0.7) {
         jengaOver = true; jengaTurn = false;
         document.getElementById('jenga-status').textContent = '💥 Башня упала! Ты проиграл!'; document.getElementById('jenga-status').style.color = '#e74c3c';
         document.getElementById('jenga-restart').style.display = 'block';
@@ -254,28 +202,14 @@ function pullBlock(blockEl) {
         jengaTurn = false; document.getElementById('jenga-status').textContent = 'Бот думает... 🤔';
         setTimeout(() => {
             const avail = jengaBlocks.filter(b => b.style.opacity !== '0.3');
-            if (avail.length > 0) { 
-                const rand = avail[Math.floor(Math.random() * avail.length)]; 
-                rand.style.transform = 'translateX(-80px) rotate(-15deg)'; 
-                rand.style.opacity = '0.3'; 
-                rand.style.pointerEvents = 'none'; 
-            }
-            
+            if (avail.length > 0) { const rand = avail[Math.floor(Math.random() * avail.length)]; rand.style.transform = 'translateX(-80px) rotate(-15deg)'; rand.style.opacity = '0.3'; rand.style.pointerEvents = 'none'; }
             const blocksLeftAfterBot = jengaBlocks.filter(b => b.style.opacity !== '0.3').length;
-            if (blocksLeftAfterBot <= 0) {
-                 jengaOver = true; jengaTurn = false;
-                 document.getElementById('jenga-status').textContent = '🏆 Ты выиграл! Башня выстояла!'; 
-                 document.getElementById('jenga-status').style.color = '#2ecc71';
-                 document.getElementById('jenga-restart').style.display = 'block';
-            } else {
-                jengaTurn = true; 
-                if(!jengaOver) { document.getElementById('jenga-status').textContent = 'Твой ход!'; document.getElementById('jenga-status').style.color = '#333'; }
-            }
+            if (blocksLeftAfterBot <= 0) { jengaOver = true; jengaTurn = false; document.getElementById('jenga-status').textContent = '🏆 Ты выиграл!'; document.getElementById('jenga-status').style.color = '#2ecc71'; document.getElementById('jenga-restart').style.display = 'block'; }
+            else { jengaTurn = true; if(!jengaOver) { document.getElementById('jenga-status').textContent = 'Твой ход!'; document.getElementById('jenga-status').style.color = '#333'; } }
         }, 1000);
     }
 }
 
-// --- КРОКОДИЛ (БОТ) ---
 let drawCanvas, ctx, isDrawing = false;
 function initDraw() {
     drawCanvas = document.getElementById('draw-canvas'); ctx = drawCanvas.getContext('2d');
@@ -285,72 +219,32 @@ function initDraw() {
     drawCanvas.onpointerup = () => isDrawing = false; drawCanvas.onpointerleave = () => isDrawing = false;
     document.getElementById('draw-status').textContent = 'Нарисуй что-нибудь!';
 }
-
-// ИСПРАВЛЕННАЯ ОЧИСТКА
-function clearCanvas() { 
-    if (ctx) { 
-        ctx.fillStyle = '#fff'; 
-        ctx.fillRect(0, 0, 300, 300); 
-        // Сбрасываем статус бота
-        document.getElementById('draw-status').textContent = 'Нарисуй что-нибудь!';
-    } 
-}
-
+function clearCanvas() { if (ctx) { ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, 300, 300); document.getElementById('draw-status').textContent = 'Нарисуй что-нибудь!'; } }
 function botGuess() {
     if (!ctx) { document.getElementById('draw-status').textContent = 'Сначала нарисуй!'; return; }
     const data = ctx.getImageData(0, 0, 300, 300).data; let dark = 0, top = 0, bottom = 0, left = 0, right = 0, center = 0;
     for (let y = 0; y < 300; y += 4) for (let x = 0; x < 300; x += 4) { const i = (y * 300 + x) * 4; const lum = (data[i] + data[i + 1] + data[i + 2]) / 3; if (lum < 200) { dark++; if (y < 100) top++; else if (y > 200) bottom++; if (x < 100) left++; else if (x > 200) right++; if (x > 100 && x < 200 && y > 100 && y < 200) center++; } }
     if (dark < 10) { document.getElementById('draw-status').textContent = 'Бот говорит: Ты ничего не нарисовал! 🙈'; return; }
     const total = dark;
-    const guesses = [
-        { text: 'Это похоже на кота 🐱', check: () => center > total * 0.3 && left > total * 0.15 && right > total * 0.15 },
-        { text: 'Это точно пони 🐴', check: () => center > total * 0.4 },
-        { text: 'Похоже на пиццу 🍕', check: () => center > total * 0.5 && top > total * 0.1 },
-        { text: 'Это звезда ⭐', check: () => center > total * 0.35 && top > total * 0.2 && bottom > total * 0.2 },
-        { text: 'Это смайлик 😊', check: () => center > total * 0.45 && left > total * 0.1 && right > total * 0.1 },
-        { text: 'Я вижу дом 🏠', check: () => bottom > total * 0.4 && left > total * 0.1 && right > total * 0.1 },
-        { text: 'Мне кажется, это солнце ☀️', check: () => center > total * 0.6 },
-        { text: 'Это дерево 🌳', check: () => bottom > total * 0.5 && center > total * 0.2 },
-        { text: 'Это сердце ❤️', check: () => center > total * 0.55 && top > total * 0.15 },
-        { text: 'Это машина 🚗', check: () => bottom > total * 0.35 && left > total * 0.2 && right > total * 0.2 },
-        { text: 'Это робот 🤖', check: () => center > total * 0.4 && left > total * 0.15 && right > total * 0.15 && top > total * 0.1 },
-        { text: 'Это рыба 🐟', check: () => center > total * 0.5 && left > total * 0.2 },
-        { text: 'Это цветок 🌸', check: () => center > total * 0.4 && top > total * 0.15 && bottom > total * 0.15 },
-        { text: 'Это гора ⛰️', check: () => bottom > total * 0.6 && top > total * 0.2 },
-        { text: 'Это самолет ✈️', check: () => left > total * 0.3 && right > total * 0.3 && center > total * 0.2 },
-        { text: 'Это пиратский корабль 🏴‍☠️', check: () => bottom > total * 0.4 && center > total * 0.3 },
-        { text: 'Это привидение 👻', check: () => center > total * 0.5 && bottom > total * 0.2 },
-        { text: 'Это кактус 🌵', check: () => center > total * 0.3 && bottom > total * 0.3 },
-        { text: 'Это мороженое 🍦', check: () => top > total * 0.3 && center > total * 0.3 },
-        { text: 'Это дракон 🐉', check: () => center > total * 0.35 && right > total * 0.2 }
-    ];
+    const guesses = [{ text: 'Это похоже на кота 🐱', check: () => center > total * 0.3 && left > total * 0.15 && right > total * 0.15 },{ text: 'Это точно пони 🐴', check: () => center > total * 0.4 },{ text: 'Похоже на пиццу 🍕', check: () => center > total * 0.5 && top > total * 0.1 },{ text: 'Это звезда ⭐', check: () => center > total * 0.35 && top > total * 0.2 && bottom > total * 0.2 },{ text: 'Это смайлик 😊', check: () => center > total * 0.45 && left > total * 0.1 && right > total * 0.1 },{ text: 'Я вижу дом 🏠', check: () => bottom > total * 0.4 && left > total * 0.1 && right > total * 0.1 },{ text: 'Мне кажется, это солнце ☀️', check: () => center > total * 0.6 },{ text: 'Это дерево 🌳', check: () => bottom > total * 0.5 && center > total * 0.2 },{ text: 'Это сердце ❤️', check: () => center > total * 0.55 && top > total * 0.15 },{ text: 'Это машина 🚗', check: () => bottom > total * 0.35 && left > total * 0.2 && right > total * 0.2 },{ text: 'Это робот 🤖', check: () => center > total * 0.4 && left > total * 0.15 && right > total * 0.15 && top > total * 0.1 },{ text: 'Это рыба 🐟', check: () => center > total * 0.5 && left > total * 0.2 },{ text: 'Это цветок 🌸', check: () => center > total * 0.4 && top > total * 0.15 && bottom > total * 0.15 },{ text: 'Это гора ⛰️', check: () => bottom > total * 0.6 && top > total * 0.2 },{ text: 'Это самолет ✈️', check: () => left > total * 0.3 && right > total * 0.3 && center > total * 0.2 },{ text: 'Это пиратский корабль 🏴‍☠️', check: () => bottom > total * 0.4 && center > total * 0.3 },{ text: 'Это привидение 👻', check: () => center > total * 0.5 && bottom > total * 0.2 },{ text: 'Это кактус 🌵', check: () => center > total * 0.3 && bottom > total * 0.3 },{ text: 'Это мороженое 🍦', check: () => top > total * 0.3 && center > total * 0.3 },{ text: 'Это дракон 🐉', check: () => center > total * 0.35 && right > total * 0.2 }];
     let best = null, bestScore = -1; for (const g of guesses) { let score = 0; if (g.check()) score = total; if (score > bestScore) { bestScore = score; best = g; } }
     const fallback = ['Это что-то абстрактное 🎨', 'Я вижу линию 📏', 'Похоже на каракули ✏️', 'Это точно шедевр 🖼️', 'Я в замешательстве 🤔'];
     document.getElementById('draw-status').textContent = 'Бот говорит: ' + (best ? best.text : fallback[Math.floor(Math.random() * fallback.length)]);
 }
 
-// --- СЕТЕВАЯ ИГРА ---
 let roomCode='',isMyTurn=false,mySymbol='',netGameOver=false,channel=null;
 async function createNetGame(){
     if(!dbClient){alert('Сеть недоступна');return;}
     roomCode=Math.floor(1000+Math.random()*9000).toString();mySymbol='X';isMyTurn=true;
-    
     let initialBoard = '';
     if (currentGame === 'jenga') initialBoard = JSON.stringify(new Array(18).fill(false));
-
     const{error}=await dbClient.from('games').insert([{id:currentGame+'_'+roomCode,turn:'X',board:initialBoard,premium:true}]);
     if(error){alert('Ошибка БД: '+error.message);return;}
     document.getElementById('net-menu').innerHTML=`<p>Твой код:</p><div class="code-box">${roomCode}</div>`;
     document.getElementById('net-game').style.display='block';
     document.getElementById('net-status').textContent='Ждем друга...';
-    
-    if(currentGame==='jenga'){
-        document.getElementById('net-board').style.display='none';
-        document.getElementById('net-jenga-board').style.display='flex';
-    } else {
-        document.getElementById('net-board').style.display='block';
-        document.getElementById('net-jenga-board').style.display='none';
-    }
+    if(currentGame==='jenga'){ document.getElementById('net-board').style.display='none'; document.getElementById('net-jenga-board').style.display='flex'; }
+    else { document.getElementById('net-board').style.display='block'; document.getElementById('net-jenga-board').style.display='none'; }
     listenToGame();
 }
 async function joinNetGame(){
@@ -361,15 +255,8 @@ async function joinNetGame(){
     if(error||!data){alert('Комната не найдена!');return;}
     document.getElementById('net-menu').style.display='none';
     document.getElementById('net-game').style.display='block';
-    
-    if(currentGame==='jenga'){
-        document.getElementById('net-board').style.display='none';
-        document.getElementById('net-jenga-board').style.display='flex';
-        drawNetJenga(data.board ? JSON.parse(data.board) : new Array(18).fill(false));
-    } else {
-        document.getElementById('net-board').style.display='block';
-        document.getElementById('net-jenga-board').style.display='none';
-    }
+    if(currentGame==='jenga'){ document.getElementById('net-board').style.display='none'; document.getElementById('net-jenga-board').style.display='flex'; drawNetJenga(data.board ? JSON.parse(data.board) : new Array(18).fill(false)); }
+    else { document.getElementById('net-board').style.display='block'; document.getElementById('net-jenga-board').style.display='none'; }
     listenToGame();
 }
 function listenToGame(){
@@ -378,63 +265,28 @@ function listenToGame(){
         const data=payload.new;
         if(currentGame==='ttt'){ tttN=data.board?data.board.split(','):['','','','','','','','',''];drawTTTN(); if(data.turn===mySymbol){isMyTurn=true;document.getElementById('net-status').textContent='Твой ход (❌)';}else{isMyTurn=false;document.getElementById('net-status').textContent='Ход друга...';}checkTTTN(); }
         if(currentGame==='c4'){ c4N=data.board?JSON.parse(data.board):Array.from({length:6},()=>Array(7).fill(''));drawC4N(); if(data.turn===mySymbol){isMyTurn=true;document.getElementById('net-status').textContent='Твой ход (🔴)';}else{isMyTurn=false;document.getElementById('net-status').textContent='Ход друга...';}checkC4N(); }
-        if(currentGame==='jenga'){ 
-            const state = data.board ? JSON.parse(data.board) : new Array(18).fill(false);
-            drawNetJenga(state); 
-            if(data.turn===mySymbol){isMyTurn=true;document.getElementById('net-status').textContent='Твой ход!';}else{isMyTurn=false;document.getElementById('net-status').textContent='Ход друга...';}
-        }
+        if(currentGame==='jenga'){ const state = data.board ? JSON.parse(data.board) : new Array(18).fill(false); drawNetJenga(state); if(data.turn===mySymbol){isMyTurn=true;document.getElementById('net-status').textContent='Твой ход!';}else{isMyTurn=false;document.getElementById('net-status').textContent='Ход друга...';} }
     }).subscribe();
 }
+function drawNetJenga(state) { const board = document.getElementById('net-jenga-board'); board.innerHTML = ''; state.forEach((isPulled, i) => { const block = document.createElement('div'); block.className = 'jenga-block'; block.style.background = i % 2 === 0 ? '#d4a373' : '#cc9a66'; if (isPulled) { block.style.transform = 'translateX(80px) rotate(15deg)'; block.style.opacity = '0.3'; block.style.pointerEvents = 'none'; } else { block.onclick = () => clickNetJenga(i, state); } board.appendChild(block); }); }
+async function clickNetJenga(index, currentState) { if (!isMyTurn || netGameOver) return; if (currentState[index]) return; currentState[index] = true; drawNetJenga(currentState); const nextTurn = mySymbol === 'X' ? 'O' : 'X'; await dbClient.from('games').update({board: JSON.stringify(currentState), turn: nextTurn}).eq('id', 'jenga_'+roomCode); }
 
-// --- СЕТЕВАЯ ДЖЕНГА ---
-function drawNetJenga(state) {
-    const board = document.getElementById('net-jenga-board');
-    board.innerHTML = '';
-    state.forEach((isPulled, i) => {
-        const block = document.createElement('div'); block.className = 'jenga-block';
-        block.style.background = i % 2 === 0 ? '#d4a373' : '#cc9a66';
-        
-        if (isPulled) {
-            block.style.transform = 'translateX(80px) rotate(15deg)'; block.style.opacity = '0.3'; block.style.pointerEvents = 'none';
-        } else {
-            block.onclick = () => clickNetJenga(i, state);
-        }
-        board.appendChild(block);
-    });
-}
-async function clickNetJenga(index, currentState) {
-    if (!isMyTurn || netGameOver) return;
-    if (currentState[index]) return;
-    currentState[index] = true;
-    drawNetJenga(currentState);
-    const nextTurn = mySymbol === 'X' ? 'O' : 'X';
-    await dbClient.from('games').update({board: JSON.stringify(currentState), turn: nextTurn}).eq('id', 'jenga_'+roomCode);
-}
-
-// --- КРЕСТИКИ-НОЛИКИ (СЕТЬ) ---
 let tttN=[];
 function drawTTTN(){const b=document.getElementById('net-board');b.className='ttt-grid';b.innerHTML='';for(let i=0;i<9;i++){const btn=document.createElement('button');btn.className='ttt-cell';btn.textContent=tttN[i]==='X'?'❌':tttN[i]==='O'?'⭕':'';btn.onclick=()=>clickTTTN(i);b.appendChild(btn);}}
 async function clickTTTN(i){if(!isMyTurn||netGameOver||tttN[i]!=='')return;tttN[i]=mySymbol;drawTTTN();const nextTurn=mySymbol==='X'?'O':'X';await dbClient.from('games').update({board:tttN.join(','),turn:nextTurn}).eq('id','ttt_'+roomCode);}
 function checkTTTN(){const lines=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];for(let[a,b,c]of lines)if(tttN[a]&&tttN[a]===tttN[b]&&tttN[a]===tttN[c]){netGameOver=true;document.getElementById('net-status').textContent=tttN[a]===mySymbol?'🎉 Победа!':'😔 Проигрыш!';return true;}if(!tttN.includes('')){netGameOver=true;document.getElementById('net-status').textContent='🤝 Ничья!';return true;}return false;}
 
-// --- 4 В РЯД (СЕТЬ) ---
 let c4N=[];
 function drawC4N(){const b=document.getElementById('net-board');b.className='c4-grid';b.innerHTML='';for(let r=0;r<6;r++)for(let c=0;c<7;c++){const cell=document.createElement('button');cell.className='c4-cell';if(c4N[r][c]==='R')cell.classList.add('red');if(c4N[r][c]==='Y')cell.classList.add('yellow');cell.onclick=()=>clickC4N(c);b.appendChild(cell);}}
 async function clickC4N(col){if(!isMyTurn||netGameOver)return;let row=-1;for(let r=5;r>=0;r--)if(c4N[r][col]===''){row=r;break;}if(row===-1)return;const sym=(mySymbol==='X')?'R':'Y';c4N[row][col]=sym;drawC4N();const nextTurn=mySymbol==='X'?'O':'X';await dbClient.from('games').update({board:JSON.stringify(c4N),turn:nextTurn}).eq('id','c4_'+roomCode);}
 function checkC4N(){let winSym=null;for(let r=0;r<6;r++)for(let c=0;c<=3;c++)if(c4N[r][c]&&c4N[r][c]===c4N[r][c+1]&&c4N[r][c]===c4N[r][c+2]&&c4N[r][c]===c4N[r][c+3])winSym=c4N[r][c];for(let c=0;c<7;c++)for(let r=0;r<=2;r++)if(c4N[r][c]&&c4N[r][c]===c4N[r+1][c]&&c4N[r][c]===c4N[r+2][c]&&c4N[r][c]===c4N[r+3][c])winSym=c4N[r][c];for(let r=0;r<=2;r++)for(let c=0;c<=3;c++)if(c4N[r][c]&&c4N[r][c]===c4N[r+1][c+1]&&c4N[r][c]===c4N[r+2][c+2]&&c4N[r][c]===c4N[r+3][c+3])winSym=c4N[r][c];for(let r=0;r<=2;r++)for(let c=3;c<7;c++)if(c4N[r][c]&&c4N[r][c]===c4N[r+1][c-1]&&c4N[r][c]===c4N[r+2][c-2]&&c4N[r][c]===c4N[r+3][c-3])winSym=c4N[r][c];if(winSym){netGameOver=true;const myColor=(mySymbol==='X')?'R':'Y';document.getElementById('net-status').textContent=(winSym===myColor)?'🎉 Победа!':'😔 Проигрыш!';return true;}if(c4N[0].every(cell=>cell!=='')){netGameOver=true;document.getElementById('net-status').textContent='🤝 Ничья!';return true;}return false;}
 
-// --- ИГРЫ С БОТОМ (КРЕСТИКИ / 4 В РЯД) ---
 let botB=[],botOver=false,botTurn=true;
 function initBotGame(game){
     currentGame = game || currentGame;
     botOver=false;botTurn=true;document.getElementById('bot-restart').style.display='none';
-    if(currentGame==='ttt'){
-        document.getElementById('bot-title').textContent='❌ Против бота';
-        botB=['','','','','','','','',''];drawTTTB();document.getElementById('bot-status').textContent='Твой ход (❌)';
-    } else if(currentGame==='c4'){
-        document.getElementById('bot-title').textContent='🔴 Против бота';
-        botB=Array.from({length:6},()=>Array(7).fill(''));drawC4B();document.getElementById('bot-status').textContent='Твой ход (🔴)';
-    }
+    if(currentGame==='ttt'){ document.getElementById('bot-title').textContent='❌ Против бота'; botB=['','','','','','','','',''];drawTTTB();document.getElementById('bot-status').textContent='Твой ход (❌)'; }
+    else if(currentGame==='c4'){ document.getElementById('bot-title').textContent='🔴 Против бота'; botB=Array.from({length:6},()=>Array(7).fill(''));drawC4B();document.getElementById('bot-status').textContent='Твой ход (🔴)'; }
 }
 function drawTTTB(){const b=document.getElementById('bot-board');b.className='ttt-grid';b.innerHTML='';for(let i=0;i<9;i++){const btn=document.createElement('button');btn.className='ttt-cell';btn.textContent=botB[i]==='X'?'❌':botB[i]==='O'?'⭕':'';btn.onclick=()=>clickTTTB(i);b.appendChild(btn);}}
 function clickTTTB(i){if(!botTurn||botOver||botB[i]!=='')return;botB[i]='X';botTurn=false;drawTTTB();if(checkTTTB())return;document.getElementById('bot-status').textContent='Бот думает... 🤔';setTimeout(moveTTTB,500);}
@@ -448,7 +300,6 @@ function moveC4B(){if(botOver)return;let move=-1;let winMove=-1,blockMove=-1;for
 function checkC4B(){const w=checkC4BWin(botB);if(w){const el=document.getElementById('bot-status');if(w==='draw')el.textContent='Ничья! 🤝';else if(w==='R')el.textContent='Ты победил! 🎉';else{el.textContent='Бот победил! 🤖';document.getElementById('bot-restart').style.display='block';}botOver=true;return true;}return false;}
 function checkC4BWin(board){for(let r=0;r<6;r++)for(let c=0;c<=3;c++)if(board[r][c]&&board[r][c]===board[r][c+1]&&board[r][c]===board[r][c+2]&&board[r][c]===board[r][c+3])return board[r][c];for(let c=0;c<7;c++)for(let r=0;r<=2;r++)if(board[r][c]&&board[r][c]===board[r+1][c]&&board[r][c]===board[r+2][c]&&board[r][c]===board[r+3][c])return board[r][c];for(let r=0;r<=2;r++)for(let c=0;c<=3;c++)if(board[r][c]&&board[r][c]===board[r+1][c+1]&&board[r][c]===board[r+2][c+2]&&board[r][c]===board[r+3][c+3])return board[r][c];for(let r=0;r<=2;r++)for(let c=3;c<7;c++)if(board[r][c]&&board[r][c]===board[r+1][c-1]&&board[r][c]===board[r+2][c-2]&&board[r][c]===board[r+3][c-3])return board[r][c];if(board[0].every(cell=>cell!==''))return 'draw';return null;}
 
-// --- ШАШКИ ---
 let chkB=[],chkPlayer='red',chkSel=null;
 function tryCheckers(){if(!isPremium)document.getElementById('modal').classList.add('active');else{showScreen('screen-checkers');initCheckers();}}
 function closeModal(){document.getElementById('modal').classList.remove('active');}
@@ -460,4 +311,4 @@ function isValidChk(fr,fc,tr,tc){const p=chkB[fr][fc];if(!p||chkB[tr][tc])return
 checkAuth();
 </script>
 </body>
-  </html>
+</html>
